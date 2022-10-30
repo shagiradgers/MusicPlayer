@@ -14,16 +14,16 @@ var Player player.Player
 var PlayPath string
 
 type App struct {
-	app    fyne.App
-	Window fyne.Window
-	Size   fyne.Size
+	fyne.App
+	fyne.Window
+	fyne.Size
 }
 
 func NewApp() (*App, error) {
 	a := &App{
-		app: app.New(),
+		App: app.New(),
 	}
-	a.Window = a.app.NewWindow("Music player")
+	a.Window = a.App.NewWindow("Music player")
 	a.Size = fyne.Size{
 		Width:  350,
 		Height: 200,
@@ -114,6 +114,25 @@ func (a *App) initInterface() error {
 		},
 	)
 
+	// pause button
+	pauseResumeBtn := widget.NewButton("Pause/Resume",
+		func() {
+			if PlayPath == "" {
+				return
+			}
+
+			if Player == nil {
+				return
+			}
+
+			if Player.IsPlaying() {
+				Player.Pause()
+			} else {
+				Player.Play()
+			}
+		},
+	)
+
 	// stop music button
 	stopBtn := widget.NewButton("Stop",
 		func() {
@@ -127,7 +146,7 @@ func (a *App) initInterface() error {
 	)
 
 	volumeContainer := container.NewGridWithColumns(2, volumeLabel, volumeSlider)
-	btnContainer := container.NewGridWithColumns(2, playBtn, stopBtn)
+	btnContainer := container.NewGridWithColumns(3, playBtn, pauseResumeBtn, stopBtn)
 	contentContainer := container.NewVBox(chooseFilePathBtn, btnContainer, volumeContainer)
 
 	a.Window.SetContent(contentContainer)
